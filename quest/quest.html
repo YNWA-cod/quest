@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Онлайн-квест — Полювання на фейки</title>
+    <style>
+      :root {
+        --bg: #0f1724;
+        --card: #0b1220;
+        --accent: #7dd3fc;
+        --muted: #94a3b8;
+        --selected-bg: #1e293b;
+        --selected-text: #ffffff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto;
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(180deg, #071021 0%, #071a2a 100%);
+        color: #e6eef6;
+      }
+      .wrap {
+        width: 100%;
+        max-width: 920px;
+        padding: 24px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+      .logo {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), #60a5fa);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #04202a;
+        font-weight: 700;
+        box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0;
+      }
+      p.lead {
+        margin: 6px 0 0;
+        color: var(--muted);
+      }
+      .card {
+        background: var(--card);
+        border-radius: 14px;
+        padding: 18px;
+        box-shadow: 0 6px 24px rgba(2, 6, 23, 0.6);
+      }
+      .stage {
+        display: none;
+      }
+      .stage.active {
+        display: block;
+      }
+      .controls {
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+      }
+      .btn {
+        background: var(--accent);
+        border: none;
+        padding: 10px 14px;
+        border-radius: 10px;
+        color: #04202a;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: var(--muted);
+      }
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      label.option {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.3s ease;
+      }
+      label.option:hover {
+        background: rgba(125, 211, 252, 0.1);
+      }
+      input[type="radio"] {
+        display: none;
+      }
+      input[type="radio"]:checked + label.option {
+        background: var(--selected-bg);
+        color: var(--selected-text);
+        border-color: rgba(125, 211, 252, 0.4);
+      }
+      .hint {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+      .result {
+        padding: 14px;
+        border-radius: 10px;
+        margin-top: 12px;
+        background: rgba(0, 0, 0, 0.2);
+        color: #cfeffd;
+      }
+      img.quiz-img {
+        width: 100%;
+        max-width: 500px;
+        border-radius: 10px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="logo">Ф</div>
+        <div>
+          <h1>Онлайн-квест «Полювання на фейки»</h1>
+          <p class="lead">
+            Пройдіть 10 етапів, перевірте себе й дізнайтесь, наскільки ви
+            медіаграмотні!
+          </p>
+        </div>
+      </header>
+
+      <main class="card" role="main">
+        <div id="intro" class="stage active">
+          <h2>Інструкція</h2>
+          <p class="hint">
+            Ви пройдете 10 коротких завдань. За кожну правильну відповідь — 1
+            бал. В кінці побачите результат.
+          </p>
+          <button class="btn" id="startBtn">Почати квест</button>
+        </div>
+
+        <!-- Шаблон питань -->
+        <section id="s1" class="stage">
+          <h2>Етап 1 — Клікбейт</h2>
+          <p class="hint">Оберіть заголовок, який виглядає як клікбейт.</p>
+          <div class="options">
+            <input type="radio" id="s1a1" name="s1" value="1" /><label
+              for="s1a1"
+              class="option"
+              >Він сказав одне слово — і парламент вибухнув!</label
+            >
+            <input type="radio" id="s1a2" name="s1" value="2" /><label
+              for="s1a2"
+              class="option"
+              >Президент виступив із промовою про освіту</label
+            >
+            <input type="radio" id="s1a3" name="s1" value="3" /><label
+              for="s1a3"
+              class="option"
+              >Мер відкрив новий дитячий садок</label
+            >
+          </div>
+          <div class="controls">
+            <button class="btn ghost" data-prev="intro">Назад</button>
+            <button class="btn" data-next="s2">Далі</button>
+          </div>
+          <div id="s1result" class="result" hidden></div>
+        </section>
+
+        <section id="s2" class="stage">
+          <h2>Етап 2 — Фотофейк</h2>
+          <p class="hint">
+            Яке фото виглядає підозрілим (має ознаки фотомонтажу, наприклад,
+            тіні чи освітлення неузгоджені)?
+          </p>
+          <div class="options">
+            <input type="radio" id="s2a1" name="s2" value="1" />
+            <label for="s2a1" class="option">
+              <img src="./img/moonshadow.jpg" class="quiz-img" alt="" />
+              <p>Фото 1 — сцена з природним освітленням і коректними тінями</p>
+            </label>
+            <input type="radio" id="s2a2" name="s2" value="2" />
+            <label for="s2a2" class="option">
+              <img
+                src="./img/shadow_0_90af800b37.jpg"
+                class="quiz-img"
+                alt=""
+              />
+              <p>
+                Фото 2 — тут тіні падають у різні боки, що суперечить одному
+                джерелу світла
+              </p>
+            </label>
+            <input type="radio" id="s2a3" name="s2" value="3" />
+            <label for="s2a3" class="option">
+              <img
+                src="./img/13414_2019_1773_Fig7_HTML.png"
+                class="quiz-img"
+                alt=""
+              />
+              <p>
+                Фото 3 — офіційне фото з пресконференції (швидше за все без
+                монтажу)
+              </p>
+            </label>
+          </div>
+          <div class="controls">
+            <button class="btn ghost" data-prev="s1">Назад</button>
+            <button class="btn" data-next="s3">Далі</button>
+          </div>
+          <div id="s2result" class="result" hidden></div>
+        </section>
+
+        <section id="s3" class="stage">
+          <h2>Етап 3 — Маніпуляції</h2>
+          <p class="hint">Яке речення використовує маніпуляцію?</p>
+          <div class="options">
+            <input type="radio" id="s3a1" name="s3" value="1" /><label
+              for="s3a1"
+              class="option"
+              >Експерти дослідили рівень довіри до медіа.</label
+            >
+            <input type="radio" id="s3a2" name="s3" value="2" /><label
+              for="s3a2"
+              class="option"
+              >Усі нормальні люди знають, що це брехня!</label
+            >
+            <input type="radio" id="s3a3" name="s3" value="3" /><label
+              for="s3a3"
+              class="option"
+              >Опитування показало різні думки громадян.</label
+            >
+          </div>
+          <div class="controls">
+            <button class="btn ghost" data-prev="s2">Назад</button
+            ><button class="btn" data-next="s4">Далі</button>
+          </div>
+          <div id="s3result" class="result" hidden></div>
+        </section>
+
+        <section id="s4" class="stage">
+          <h2>Етап 4 — Джерела</h2>
+          <p class="hint">Яке джерело найнадійніше?</p>
+          <div class="options">
+            <input type="radio" id="s4a1" name="s4" value="1" /><label
+              for="s4a1"
+              class="option"
+              >Пост у соцмережі без посилань</label
+            >
+            <input type="radio" id="s4a2" name="s4" value="2" /><label
+              for="s4a2"
+              class="option"
+              >Стаття на офіційному сайті держустанови</label
+            >
+            <input type="radio" id="s4a3" name="s4" value="3" /><label
+              for="s4a3"
+              class="option"
+              >Анонімний блог</label
+            >
+          </div>
+          <div class="controls">
+            <button class="btn ghost" data-prev="s3">Назад</button
+            ><button class="btn" data-next="s5">Далі</button>
+          </div>
+          <div id="s4result" class="result" hidden></div>
+        </section>
+
+        <section id="s5" class="stage">
+          <h2>Етап 5 — Емоції</h2>
+          <p class="hint">Який заголовок грає на емоціях?</p>
+          <div class="options">
+            <input type="radio" id="s5a1" name="s5" value="1" /><label
+              for="s5a1"
+              class="option"
+              >Лікарі попереджають: дотримуйтесь правил гігієни</label
+            >
+            <input type="radio" id="s5a2" name="s5" value="2" /><label
+              for="s5a2"
+              class="option"
+              >Цей напій вбиває за три дні! Дізнайтесь, який!</label
+            >
+            <input type="radio" id="s5a3" name="s5" value="3" /><label
+              for="s5a3"
+              class="option"
+              >Нові рекомендації МОЗ щодо харчування</label
+            >
+          </div>
+          <div class="controls">
+            <button class="btn ghost" data-prev="s4">Назад</button
+            ><button class="btn" data-next="s6">Далі</button>
+          </div>
+          <div id="s5result" class="result" hidden></div>
+        </section>
+
+        <section id="s6" class="stage">
+          <h2>Етап 6 — Перевірка дати</h2>
+          <p class="hint">Як зрозуміти, що новина може бути старою?</p>
+          <div class="options">
+            <input type="radio" id="s6a1" name="s6" value="1" /><label
+              for="s6a1"
+              class="option"
+              >Перевірити дату публікації</label
+            >
+            <input type="radio" id="s6a2" name="s6" value="2" /><label
+              for="s6a2"
+              class="option"
+              >Ігнорувати дату</label
+            >
+            <input type="radio" id="s6a3" name="s6" value="3" /><label
+              for="s6a3"
+              class="option"
+              >Дивитися лише заголовок</label
+            >
+          </div>
+          <div class="controls">
+            <button class="btn ghost" data-prev="s5">Назад</button
+            ><button class="btn" data-next="s7">Далі</button>
+          </div>
+          <div id="s6result" class="result" hidden></div>
+        </section>
+
+        <section id="s7" class="stage">
+          <h2>Етап 7 — Цитати</h2>
+          <p class="hint">Як перевірити, чи справжня цитата?</p>
+          <div class="options">
+            <input type="radio" id="s7a1" name="s7" value="1" />
+            <label for="s7a1" class="option"
+              >Знайти джерело, де її дійсно сказано</label
+            >
+
+            <input type="radio" id="s7a2" name="s7" value="2" />
+            <label for="s7a2" class="option">Повірити знайомому</label>
+
+            <input type="radio" id="s7a3" name="s7" value="3" />
+            <label for="s7a3" class="option">Якщо звучить логічно — вірю</label>
+
+            <input type="radio" id="s7a4" name="s7" value="4" />
+            <label for="s7a4" class="option"
+              >Якщо це пише надійний канал у Telegram</label
+            >
+          </div>
+          <div class="controls">
+            <button class="btn ghost" data-prev="s6">Назад</button>
+            <button class="btn" data-next="s8">Далі</button>
+          </div>
+          <div id="s7result" class="result" hidden></div>
+        </section>
+
+        <section id="s8" class="stage">
+          <h2>Етап 8 — Фотофактчек</h2>
+          <p class="hint">Що зробити, щоб перевірити фото?</p>
+          <div class="options">
+            <input type="radio" id="s8a1" name="s8" value="1" /><label
+              for="s8a1"
+              class="option"
+              >Використати зворотний пошук зображень</label
+            >
+            <input type="radio" id="s8a2" name="s8" value="2" /><label
+              for="s8a2"
+              class="option"
+              >Довіритись коментарям</label
+            >
+            <input type="radio" id="s8a3" name="s8" value="3" /><label
+              for="s8a3"
+              class="option"
+              >Запитати в чаті</label
+            >
+          </div>
+          <div class="controls">
+            <button class="btn ghost" data-prev="s7">Назад</button
+            ><button class="btn" data-next="s9">Далі</button>
+          </div>
+          <div id="s8result" class="result" hidden></div>
+        </section>
+
+        <section id="s9" class="stage">
+          <h2>Етап 9 — Коментарі</h2>
+          <p class="hint">
+            Чи можна довіряти коментарям як джерелу інформації?
+          </p>
+          <div class="options">
+            <input type="radio" id="s9a1" name="s9" value="1" /><label
+              for="s9a1"
+              class="option"
+              >Ні, бо це лише думки людей</label
+            >
+            <input type="radio" id="s9a2" name="s9" value="2" /><label
+              for="s9a2"
+              class="option"
+              >Так, якщо багато лайків</label
+            >
+            <input type="radio" id="s9a3" name="s9" value="3" /><label
+              for="s9a3"
+              class="option"
+              >Так, якщо емоційно написано</label
+            >
+          </div>
+          <div class="controls">
+            <button class="btn ghost" data-prev="s8">Назад</button
+            ><button class="btn" data-next="s10">Далі</button>
+          </div>
+          <div id="s9result" class="result" hidden></div>
+        </section>
+
+        <section id="s10" class="stage">
+          <h2>Етап 10 — Фінал</h2>
+          <p class="hint">Що головне у боротьбі з фейками?</p>
+          <div class="options">
+            <input type="radio" id="s10a1" name="s10" value="1" /><label
+              for="s10a1"
+              class="option"
+              >Критичне мислення і перевірка фактів</label
+            >
+            <input type="radio" id="s10a2" name="s10" value="2" /><label
+              for="s10a2"
+              class="option"
+              >Довіра до всього, що у стрічці</label
+            >
+            <input type="radio" id="s10a3" name="s10" value="3" /><label
+              for="s10a3"
+              class="option"
+              >Емоційне реагування</label
+            >
+          </div>
+          <div class="controls">
+            <button class="btn ghost" data-prev="s9">Назад</button
+            ><button class="btn" id="finishBtn">Завершити</button>
+          </div>
+          <div id="s10result" class="result" hidden></div>
+        </section>
+
+        <section id="end" class="stage">
+          <h2>🎉 Результат</h2>
+          <p id="scoreText"></p>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const correct = {
+        s1: "2",
+        s2: "2",
+        s3: "2",
+        s4: "2",
+        s5: "2",
+        s6: "1",
+        s7: "1",
+        s8: "1",
+        s9: "1",
+        s10: "1",
+      };
+
+      const explanations = {
+        s1: "Клікбейтні фейки часто мають емоційний, перебільшуючий заголовок.",
+        s2: "Тіні у різні боки — типова ознака фотомонтажу.",
+        s3: "Фраза «усі нормальні люди» тисне на емоції, а не на факти.",
+        s4: "Офіційні сайти зазвичай перевіряють інформацію.",
+        s5: "Клікбейтні емоційні заголовки часто маніпулюють страхом або цікавістю.",
+        s6: "Стара новина може поширюватись як актуальна — перевіряйте дату.",
+        s7: "Цитати перевіряють за офіційними джерелами чи відеоінтерв’ю.",
+        s8: "Зворотний пошук допоможе знайти, де фото з’явилося вперше.",
+        s9: "Коментарі — це думки, а не факти.",
+        s10: "Критичне мислення — головна зброя проти фейків.",
+      };
+
+      let score = 0;
+
+      function show(id) {
+        document
+          .querySelectorAll(".stage")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+      }
+
+      document
+        .getElementById("startBtn")
+        .addEventListener("click", () => show("s1"));
+      document
+        .querySelectorAll("[data-prev]")
+        .forEach((b) =>
+          b.addEventListener("click", () => show(b.dataset.prev))
+        );
+
+      document.querySelectorAll("[data-next]").forEach((btn) => {
+        let explained = false;
+
+        btn.addEventListener("click", () => {
+          const next = btn.dataset.next;
+          const stage = btn.closest(".stage");
+          const name = stage.id;
+          const selected = document.querySelector(
+            `input[name="${name}"]:checked`
+          );
+          const result = document.getElementById(name + "result");
+
+          if (!explained) {
+            if (!selected) {
+              result.hidden = false;
+              result.textContent = "Оберіть варіант.";
+              return;
+            }
+            if (selected.value === correct[name]) {
+              result.hidden = false;
+              result.textContent = "✅ Правильно! " + explanations[name];
+              score++;
+            } else {
+              result.hidden = false;
+              result.textContent = "❌ Неправильно. " + explanations[name];
+            }
+            explained = true; // тепер наступне натискання перейде далі
+            btn.textContent = "Далі ➜"; // зміна тексту кнопки
+          } else {
+            // На друге натискання — перехід далі
+            explained = false;
+            btn.textContent = "Перевірити ➜"; // повертаємо напис
+            result.hidden = true;
+            show(next);
+          }
+        });
+      });
+
+      // Фінішна кнопка
+      const finishBtn = document.getElementById("finishBtn");
+      let finishExplained = false;
+
+      finishBtn.addEventListener("click", () => {
+        const name = "s10";
+        const selected = document.querySelector(
+          `input[name="${name}"]:checked`
+        );
+        const res = document.getElementById(name + "result");
+
+        if (!finishExplained) {
+          if (!selected) {
+            res.hidden = false;
+            res.textContent = "Оберіть варіант.";
+            return;
+          }
+
+          if (selected.value === correct[name]) {
+            score++;
+            res.hidden = false;
+            res.textContent = "✅ Правильно! " + explanations[name];
+          } else {
+            res.hidden = false;
+            res.textContent = "❌ Неправильно. " + explanations[name];
+          }
+
+          finishExplained = true;
+          finishBtn.textContent = "Завершити ➜";
+        } else {
+          // Показуємо результат після другого кліку
+          finishExplained = false;
+          res.hidden = true;
+
+          show("end");
+          document.getElementById("scoreText").innerHTML = `
+      Ви набрали <strong>${score}</strong> із 10 балів.<br>
+      ${
+        score >= 8
+          ? "Відмінно! Ви справжній мисливець на фейки."
+          : score >= 5
+          ? "Непогано! Але ще є над чим попрацювати."
+          : "Будьте уважні! Перечитайте поради й спробуйте ще раз."
+      }
+    `;
+        }
+      });
+    </script>
+  </body>
+</html>
